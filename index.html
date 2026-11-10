@@ -25,6 +25,49 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       line-height: 1.6;
+      <div id="weather">
+  <h3>Погода в Ташкенте</h3>
+  <p id="temp">Загрузка...</p>
+  <p id="details"></p>
+</div>
+
+<script>
+  const url =
+    "https://api.open-meteo.com/v1/forecast" +
+    "?latitude=41.2995&longitude=69.2401" +
+    "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code" +
+    "&timezone=Asia%2FTashkent";
+
+  const codes = {
+    0: "Ясно", 1: "Преимущественно ясно", 2: "Переменная облачность", 3: "Пасмурно",
+    45: "Туман", 48: "Изморозь",
+    51: "Лёгкая морось", 53: "Морось", 55: "Сильная морось",
+    61: "Небольшой дождь", 63: "Дождь", 65: "Сильный дождь",
+    71: "Небольшой снег", 73: "Снег", 75: "Сильный снег",
+    80: "Ливень", 95: "Гроза"
+  };
+
+  async function loadWeather() {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const c = data.current;
+
+      document.getElementById("temp").textContent =
+        Math.round(c.temperature_2m) + "°C, " + (codes[c.weather_code] || "—");
+
+      document.getElementById("details").textContent =
+        "Ощущается как " + Math.round(c.apparent_temperature) + "°C · " +
+        "Влажность " + c.relative_humidity_2m + "% · " +
+        "Ветер " + c.wind_speed_10m + " км/ч";
+    } catch (e) {
+      document.getElementById("temp").textContent = "Не удалось загрузить погоду";
+    }
+  }
+
+  loadWeather();
+  setInterval(loadWeather, 10 * 60 * 1000); // обновление каждые 10 минут
+</script>
     }
 
     header {
